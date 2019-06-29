@@ -1,0 +1,21 @@
+package cn.itcast.store.service;
+
+import java.util.List;
+
+import cn.itcast.store.domain.PageModel;
+
+public interface adminSerice {
+
+	PageModel findProduct(int num)throws Exception;
+
+	List FindCategory()throws Exception;
+
+	void AddCategory(String value)throws Exception;
+
+	void updateCategory(String value, String cid)throws Exception;
+	
+	boolean delectCategory(String cid)throws Exception;
+
+	void updateProduct()throws Exception;
+
+}

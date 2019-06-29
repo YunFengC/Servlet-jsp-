@@ -1,0 +1,12 @@
+package cn.itcast.store.web.servlet;
+
+import org.junit.Test;
+
+public class test3 extends test {
+	@Test
+	@Override
+	public void eat() {
+		System.out.println("111");
+	}
+	
+}

@@ -1,0 +1,15 @@
+package cn.itcast.store.domain;
+
+import java.util.Date;
+
+public class ordersBean {
+	private String oid;
+	private Date ordertime;
+	private double total;
+	private int state;
+	private String address;
+	private String name;
+	private String telephone;
+	private String UserBean;
+	
+}

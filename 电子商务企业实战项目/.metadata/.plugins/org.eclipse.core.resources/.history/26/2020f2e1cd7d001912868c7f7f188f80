@@ -1,0 +1,157 @@
+package cn.itcast.store.web.servlet;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.eclipse.jdt.internal.compiler.batch.Main;
+
+import cn.itcast.store.domain.PageModel;
+import cn.itcast.store.domain.ProductBean;
+import cn.itcast.store.service.adminSerice;
+import cn.itcast.store.service.serviceimpl.adminSericeImpl;
+import cn.itcast.store.utils.UUIDUtils;
+import cn.itcast.store.web.base.BaseServlet;
+
+/**
+ * Servlet implementation class adminServlet
+ */
+public class adminServlet extends BaseServlet {
+	
+	public String findProduct(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		int num = Integer.parseInt(request.getParameter("num"));
+		
+		adminSerice service = new adminSericeImpl();
+		PageModel pm = service.findProduct(num);
+		request.getSession().setAttribute("page", pm);
+		return "/admin/product/list.jsp";
+	}
+	public String FindCategory(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		
+		adminSerice service = new adminSericeImpl();
+		List li = service.FindCategory();
+		request.setAttribute("li", li);
+		String pid = request.getParameter("pid");
+		adminSerice service01 = new adminSericeImpl();
+		ProductBean pb = service01.findProduct01(pid);
+		request.setAttribute("pb", pb);
+		return "/admin/category/list.jsp";
+		//return "/admin/product/edit.jsp";
+	}
+	public String AddCategory(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		String value = request.getParameter("value");
+		
+		adminSerice service = new adminSericeImpl();
+		service.AddCategory(value);
+		return "/admin/category/add.jsp";
+	}
+	public String updateCategory(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		String value = request.getParameter("value");
+		String cid = request.getParameter("cid");
+		System.out.println(value+"value");
+		System.out.println(cid+"-------------");
+		adminSerice service = new adminSericeImpl();
+		service.updateCategory(value,cid);
+		response.getWriter().write("修改成功!!!");
+		return "/admin/category/list.jsp";
+	}
+	public String updatecid(HttpServletRequest request, HttpServletResponse response){
+		String cid = request.getParameter("cid");
+		System.out.println("cid="+cid);
+		request.setAttribute("cid", cid);
+		return "/admin/category/edit.jsp";
+	}
+	public String delectCategory(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		String cid = request.getParameter("cid");
+		
+		adminSerice service = new adminSericeImpl();
+		boolean flag = service.delectCategory(cid);
+		System.out.println(flag);
+		adminSerice service01 = new adminSericeImpl();
+		List lii = service01.FindCategory();
+		
+		request.setAttribute("li", lii);
+		if(flag==true){
+			request.setAttribute("tishi", "删除成功！！！");
+		}else{
+			request.setAttribute("tishi", "请先删除该项以下商品后再删除该项！！！");
+		}
+		
+		return "/admin/category/list.jsp";
+	}
+	public String updatepid(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		String pid = request.getParameter("pid");
+		System.out.println("pid="+pid);
+		request.setAttribute("pid", pid);
+		adminSerice service01 = new adminSericeImpl();
+		ProductBean pb = service01.findProduct01(pid);
+		adminSerice service = new adminSericeImpl();
+		List li = service.FindCategory();
+		request.setAttribute("li", li);
+		request.setAttribute("pb", pb);
+
+		//return "adminServlet?method=FindCategory&pid="+pid;
+		return "/admin/product/edit.jsp";
+	}
+	public String updateProduct(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		Map<String, String[]> map = request.getParameterMap();
+		Date date = new Date();
+		ProductBean productBean = new ProductBean();
+		productBean.setPdate(date);
+		BeanUtils.populate(productBean, map);
+		adminSerice service = new adminSericeImpl();
+		service.updateProduct(productBean);
+		System.out.println(productBean.toString());
+		int num=1;
+		adminSerice service01 = new adminSericeImpl();
+		PageModel pm = service01.findProduct(num);
+		request.getSession().setAttribute("page", pm);
+		
+		return "/admin/product/list.jsp";
+	}
+	public String FindCategory02(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		adminSerice service = new adminSericeImpl();
+		List li = service.FindCategory();
+		request.setAttribute("li", li);
+		
+		return "/admin/category/list.jsp";
+	}
+	public String addProductPid(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		adminSerice service = new adminSericeImpl();
+		List li = service.FindCategory();
+		request.setAttribute("li", li);
+		return "/admin/product/add.jsp";
+	}
+	public String addProduct(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		Map<String, String[]> map = request.getParameterMap();
+		ProductBean productBean = new ProductBean();
+		BeanUtils.populate(productBean, map);
+		Date date = new Date();
+		productBean.setPdate(date);
+		adminSerice service = new adminSericeImpl();
+		productBean.setPid(UUIDUtils.getId());
+		System.out.println(productBean.toString());
+		service.addProduct(productBean);
+		int num=1;
+		adminSerice service01 = new adminSericeImpl();
+		PageModel pm = service01.findProduct(num);
+		request.getSession().setAttribute("page", pm);
+		return "/admin/product/list.jsp";
+	}
+	public String  updatePflag (HttpServletRequest request, HttpServletResponse response){
+		
+		
+		
+		
+		
+		
+		return "adminServlet?method=findProduct&num=1";
+	}
+}

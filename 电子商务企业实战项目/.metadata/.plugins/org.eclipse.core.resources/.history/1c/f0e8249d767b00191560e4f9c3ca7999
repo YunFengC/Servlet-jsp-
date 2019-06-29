@@ -1,0 +1,9 @@
+package cn.itcast.store.domain;
+
+public class orderitemBean {
+	private String itemid;
+	private String quantity;
+	private String total;
+	private ProductBean productbean;
+	private ordersBean ordersbean;
+}

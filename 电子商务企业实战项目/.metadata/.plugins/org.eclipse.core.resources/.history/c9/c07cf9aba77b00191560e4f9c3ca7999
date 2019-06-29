@@ -1,0 +1,13 @@
+package cn.itcast.store.service;
+
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.domain.ordersBean;
+import cn.itcast.store.web.servlet.PageModel;
+
+public interface OrderService {
+
+	void saveOrder(ordersBean ordersBean)throws Exception;
+
+	PageModel findOrdersByUidWithPage(int pagenum, UserBean userbean)throws Exception;
+
+}

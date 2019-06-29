@@ -1,0 +1,29 @@
+package Utilt;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/*
+ * 携带两种数据
+ * 1、当前页的商品信息
+ * 2、相关参数(总的页数、总的数据数、当前页、每页显示的数据数、起始页数、起始的数据、最终的页数)
+ * 
+ * 
+ */
+public class PageModel<T> {
+	//当前页的相关商品(用集合装)
+	List<T> list = new ArrayList();
+	//设置各种参数
+	private int currentPageNum;
+	private int pageSize;
+	private int totalRecords;
+	
+	private int totalPageNum;
+	private int startIndex;
+	private int prePageNum;
+	private int nextPageNum;
+	
+	private int startPage;
+	private int endPage;
+	
+}

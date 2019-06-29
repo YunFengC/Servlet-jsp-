@@ -1,0 +1,21 @@
+package daoImpl;
+
+import java.util.List;
+
+import dao.Dao;
+
+public class DaoImpl implements Dao {
+
+	@Override
+	public int totalautoAll() throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List listAll() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

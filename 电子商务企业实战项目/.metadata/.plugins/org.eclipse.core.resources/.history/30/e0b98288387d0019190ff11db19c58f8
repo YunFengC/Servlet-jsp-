@@ -1,0 +1,22 @@
+package cn.itcast.store.dao;
+
+import java.util.List;
+
+import cn.itcast.store.domain.CategoryBean;
+import cn.itcast.store.domain.ProductBean;
+
+public interface CategoryDao {
+
+	List<CategoryBean> findAllCats ()throws Exception;
+
+	void AddCategory(String value)throws Exception;
+
+	void updateCategory(String value, String cid)throws Exception;
+
+	ProductBean findP(String cid)throws Exception;
+
+	void delectCategory(String cid)throws Exception;
+
+	void updateProduct(String pid)throws Exception;
+
+}

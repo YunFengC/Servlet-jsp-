@@ -1,0 +1,72 @@
+package cn.itcast.store.domain;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Car {
+	private Map<String, CarTerm> map = new HashMap<String, CarTerm>();
+	private double total = 0;
+	private Collection<CarTerm> collection;
+	public Collection<CarTerm> getCollection() {
+		return collection;
+	}
+
+	public void setCollection(Collection<CarTerm> collection) {
+		this.collection = collection;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public Map<String, CarTerm> getMap() {
+		return map;
+	}
+
+	public Car() {
+
+	}
+
+	public void setMap(Map<String, CarTerm> map) {
+		this.map = map;
+	}
+
+	public double getTotal() {
+		total = 0;
+
+		for (CarTerm ct : map.values()) {
+			total += ct.getProductbean().getMarket_price();
+		}
+
+		return total;
+	}
+	public void setTotal(int total) {
+		this.total = total;
+	}
+	public void AddCat(CarTerm carterm) {
+		// 在购物车中找有没有要添加的这个商品的PID,如果有的话就加上数量就行,没有的话就加到购物车里
+		String pid = carterm.getProductbean().getPid();
+		if (map.containsKey(pid)){
+			
+			CarTerm old = map.get(pid);
+			old.setNumber(carterm.getNumber() + old.getNumber());
+		} else {
+			map.put(pid, carterm);
+			System.out.println("map"+map.toString());
+		}
+	}
+
+	public void EmptyCat() {
+		map.clear();
+	}
+
+	public void delectCatTerm(String pid) {
+
+		map.remove(pid);
+	
+	}
+	public Collection<CarTerm>  getCarTerms(){
+		return map.values();
+	}
+}

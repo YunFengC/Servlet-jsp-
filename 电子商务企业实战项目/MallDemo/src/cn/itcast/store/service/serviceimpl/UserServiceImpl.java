@@ -1,0 +1,46 @@
+package cn.itcast.store.service.serviceimpl;
+
+import java.sql.SQLException;
+
+import cn.itcast.store.dao.UserDao;
+import cn.itcast.store.dao.daoimpl.UserDaoImpl;
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.service.UserService;
+
+public class UserServiceImpl implements UserService {
+
+	@Override
+	public void AddUser(UserBean userBean) throws SQLException {
+		UserDao dao = new UserDaoImpl();
+		dao.AddUser(userBean);
+	}
+
+	@Override
+	public UserBean userActive(String code)throws SQLException {
+		UserDao dao = new UserDaoImpl();
+		return dao.UserActive(code);
+	}
+
+	@Override
+	public void UpdataUser(UserBean userBean)throws SQLException {
+		UserDao dao = new UserDaoImpl();
+		dao.UpdataUser(userBean);
+	}
+
+	@Override
+	public UserBean UserLogin(String username, String password)throws SQLException {
+		UserDao dao = new UserDaoImpl();
+		return dao.UserLogin( username,  password);
+	}
+
+	@Override
+	public boolean AllUserName(String username) throws SQLException {
+		UserDao dao = new UserDaoImpl();
+		String name = dao.AllUserName(username);
+		if(name!=null){
+			return true;
+		}else{
+			return false;
+		}
+	}
+}

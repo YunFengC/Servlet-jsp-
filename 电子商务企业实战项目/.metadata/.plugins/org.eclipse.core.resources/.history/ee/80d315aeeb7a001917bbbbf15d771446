@@ -1,0 +1,91 @@
+package cn.itcast.store.web.filter;
+
+import java.io.IOException;
+import java.sql.SQLException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.service.UserService;
+import cn.itcast.store.service.serviceimpl.UserServiceImpl;
+import cn.itcast.store.utils.CookUtils;
+
+/**
+ * Servlet Filter implementation class AutoLogin
+ */
+public class AutoLogin implements Filter {
+
+	/**
+	 * Default constructor.
+	 */
+	public AutoLogin() {
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy() {
+		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+			throws IOException, ServletException {
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) resp;
+
+		UserBean userbeans = (UserBean) request.getSession().getAttribute("userbean");
+		if (userbeans == null) {
+			// 找Cookie
+			Cookie[] cookies = request.getCookies();
+			CookUtils cookUtils = new CookUtils();
+			Cookie cookieByName = cookUtils.getCookieByName("auto", cookies);
+			if (cookieByName == null) {
+				chain.doFilter(request, response);
+			} else {
+				try {
+					String value = cookieByName.getValue();
+					String[] split = value.split("=");
+					String username = split[0];
+					String password = split[1];
+
+					UserService service = new UserServiceImpl();
+					UserBean userbean = service.UserLogin(username, password);
+
+					String num = request.getParameter("num");
+					System.out.println(num);
+					if (num != null) {
+						chain.doFilter(request, response);
+					} else {
+						request.getSession().setAttribute("userbean", userbean);
+					}
+					chain.doFilter(request, response);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			chain.doFilter(request, response);
+		}
+
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException {
+		// TODO Auto-generated method stub
+	}
+
+}

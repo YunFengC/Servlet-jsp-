@@ -1,0 +1,5 @@
+package cn.itcast.store.domain;
+
+public class orderitemBean {
+
+}

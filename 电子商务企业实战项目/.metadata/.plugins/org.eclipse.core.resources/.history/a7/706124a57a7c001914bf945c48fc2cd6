@@ -1,0 +1,10 @@
+package cn.itcast.store.web.servlet;
+
+public class test {
+	
+	public void eat(){
+		System.out.println("eat");
+	}
+	
+	
+}

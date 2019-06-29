@@ -1,0 +1,5 @@
+package cn.itcast.store.service.serviceimpl;
+
+public interface OrderServiceImpl {
+
+}

@@ -1,0 +1,9 @@
+package cn.itcast.store.service;
+
+import cn.itcast.store.domain.PageModel;
+
+public interface adminSerice {
+
+	PageModel findProduct(int num)throws Exception;
+
+}

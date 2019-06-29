@@ -1,0 +1,94 @@
+package cn.itcast.store.dao.daoimpl;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.converters.DateConverter;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
+
+import cn.itcast.store.dao.OrderDao;
+import cn.itcast.store.domain.ProductBean;
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.domain.orderitemBean;
+import cn.itcast.store.domain.ordersBean;
+import cn.itcast.store.utils.JDBCUtils;
+
+public class OrderDaoImpl implements OrderDao {
+	QueryRunner runner = new QueryRunner(JDBCUtils.getDataSource());
+	@Override
+	public void saveOrder(Connection conn, ordersBean ordersBean) throws Exception {
+		String sql = "insert into orders values(?,?,?,?,?,?,?,?)";
+		Object[] params={ordersBean.getOid(),ordersBean.getOrdertime(),ordersBean.getTotal(),ordersBean.getState(),ordersBean.getAddress(),ordersBean.getName(),ordersBean.getTelephone(),ordersBean.getUserbean().getUid()};
+		runner.update(conn,sql,params);
+	}
+
+	@Override
+	public void saveOrderitem(Connection conn, orderitemBean ob) throws Exception {
+		String sql = "insert into orderitem values(?,?,?,?,?)";
+		Object[] params={ob.getItemid(),ob.getQuantity(),ob.getSubtotal(),ob.getProductbean().getPid(),ob.getOrdersbean().getOid()};
+		runner.update(conn,sql,params);
+	}
+
+	@Override
+	public int findTotalRecordsByUid(UserBean userbean) throws Exception {
+		String sql = "select count(*) from orders where uid=?";
+		Long l = (Long) runner.query(sql,new ScalarHandler(),userbean.getUid());
+		return l.intValue();
+	}
+
+	@Override
+	public List<ordersBean> findOrdersByUidWithPage(UserBean userbean, int startIndex, int pageSize) throws Exception {
+		String sql = "select * from orders where uid=? limit ?,?";
+		List<ordersBean> list = runner.query(sql, new BeanListHandler<ordersBean>(ordersBean.class),userbean.getUid(),startIndex,pageSize);
+		for (ordersBean ob : list) {
+			String sqls = "select * from orderitem o,product p where o.pid=p.pid and oid=?";
+			List<Map<String, Object>> list02 = runner.query(sqls, new MapListHandler(),ob.getOid());
+			for (Map<String, Object> map : list02) {
+				orderitemBean orderitemBean = new orderitemBean();
+				ProductBean productBean = new ProductBean();
+				// 1_创建时间类型的转换器
+				DateConverter dt = new DateConverter();
+				// 2_设置转换的格式
+				dt.setPattern("yyyy-MM-dd");
+				// 3_注册转换器
+				ConvertUtils.register(dt, java.util.Date.class);
+				BeanUtils.populate(orderitemBean, map);
+				BeanUtils.populate(productBean, map);
+				orderitemBean.setProductbean(productBean);
+				ob.getList().add(orderitemBean);
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public ordersBean findoid(String oid) throws Exception {
+		String sql = " select * from orders,orderitem where orders.oid=orderitem.oid and oid=?";
+	
+		 List<Map<String, Object>> list = runner.query(sql, new MapListHandler(),oid);
+		 ordersBean ordersBean = new ordersBean();	
+		 for (Map<String, Object> map : list) {
+		 	// 1_创建时间类型的转换器
+				DateConverter dt = new DateConverter();
+				// 2_设置转换的格式
+				dt.setPattern("yyyy-MM-dd");
+				// 3_注册转换器
+				ConvertUtils.register(dt, java.util.Date.class);
+				orderitemBean orderitemBean = new orderitemBean();
+				
+				BeanUtils.populate(ordersBean, map);
+				BeanUtils.populate(orderitemBean, map);
+				ordersBean.getList().add(orderitemBean);
+			}
+		 return ordersBean;
+	}
+
+}

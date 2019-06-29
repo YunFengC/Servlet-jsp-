@@ -1,0 +1,51 @@
+package cn.itcast.store.service.serviceimpl;
+
+import java.sql.Connection;
+
+import cn.itcast.store.dao.OrderDao;
+import cn.itcast.store.dao.daoimpl.OrderDaoImpl;
+import cn.itcast.store.domain.PageModel;
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.domain.orderitemBean;
+import cn.itcast.store.domain.ordersBean;
+import cn.itcast.store.service.OrderService;
+import cn.itcast.store.utils.JDBCUtils;
+
+public class OrderServiceImpl implements OrderService{
+
+	@Override
+	public void saveOrder(ordersBean ordersBean) throws Exception {
+		Connection conn =null;
+		try {
+			 conn = JDBCUtils.getConnection();
+			conn.setAutoCommit(false);
+			OrderDao dao = new OrderDaoImpl();
+			dao.saveOrder(conn,ordersBean);
+			for (orderitemBean ob : ordersBean.getList()) {
+				dao.saveOrderitem(conn,ob);
+			}
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+		}finally {
+			if(conn!=null){
+				conn.close();
+				conn=null;
+			}
+		}
+
+		
+	}
+
+	@Override
+	public PageModel findOrdersByUidWithPage(int pagenum, UserBean userbean) throws Exception {
+		OrderDao dao = new OrderDaoImpl();
+		int total = dao.findTotalRecordsByUid(userbean);
+		PageModel pageModel = new PageModel(pagenum,total,3);
+		int startIndex = pageModel.getStartIndex();
+		dao.findOrdersByUidWithPage(userbean,startIndex,pageModel.getPageSize());
+		
+		return null;
+	}
+
+}

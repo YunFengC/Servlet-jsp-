@@ -1,0 +1,83 @@
+package cn.itcast.store.web.servlet;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import cn.itcast.store.domain.Car;
+import cn.itcast.store.domain.CarTerm;
+import cn.itcast.store.domain.PageModel;
+import cn.itcast.store.domain.ProductBean;
+import cn.itcast.store.service.ProductService;
+import cn.itcast.store.service.serviceimpl.ProductServiceImpl;
+import cn.itcast.store.web.base.BaseServlet;
+
+/**
+ * Servlet implementation class ProductServlet
+ */
+public class ProductServlet extends BaseServlet {
+	public String findProductBypid(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		
+		String pid = request.getParameter("pid");
+		ProductService service = new ProductServiceImpl();
+		List<ProductBean> list = service.findProductBypid(pid);
+		request.setAttribute("list", list);
+		return "jsp/product_info.jsp";
+	}
+	public String findProductsWithCidAndPage(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		String cid = request.getParameter("cid");
+		int num = Integer.parseInt(request.getParameter("num"));
+		
+		ProductService service = new ProductServiceImpl();
+		PageModel  pagemodel = service.findProductsWithCidAndPage(cid,num);
+		request.setAttribute("page", pagemodel);
+		return "/jsp/product_list.jsp";	
+	}
+	public String AddCatServlet(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		int num = Integer.parseInt(request.getParameter("quantity"));
+		String pid = request.getParameter("pid");
+		System.out.println("num="+num);
+		System.out.println("pid="+pid);
+		
+		ProductService service = new ProductServiceImpl();
+		List<ProductBean> list = service.findProductBypid(pid);
+		ProductBean productbean =null;
+		for (int i = 0; i < list.size(); i++) {
+			 productbean = list.get(i);
+		}
+		System.out.println(productbean.toString());
+		
+		CarTerm carTerm = new CarTerm();
+		carTerm.setProductbean(productbean);
+		carTerm.setNumber(num);
+		double subtotal = carTerm.getSubtotal();
+		System.out.println("subtotal="+subtotal);
+		
+		//获取购物车:从session中获取,获取到直接使用,
+		Car cart=(Car)request.getSession().getAttribute("cart");
+		//如果获取不到,创建一份,并且在session在绑定一份
+		if(null==cart){
+			cart=new Car();
+			request.getSession().setAttribute("cart", cart);
+		}
+		cart.AddCat(carTerm);
+		
+		Map<String, CarTerm> map = cart.getMap();
+		
+		for (Object m : map.values()) {
+			System.out.println("m==="+m.toString());
+		}
+		
+		Collection<CarTerm> carTerms = cart.getCarTerms();
+		cart.setCollection(carTerms);
+
+		
+		return "/jsp/cart.jsp";
+	}
+}

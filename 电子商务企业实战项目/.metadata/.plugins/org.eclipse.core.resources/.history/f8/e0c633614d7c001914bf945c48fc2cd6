@@ -1,0 +1,23 @@
+package cn.itcast.store.dao.daoimpl;
+
+import java.util.List;
+
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
+
+import cn.itcast.store.dao.adminDao;
+
+public class adminDaoImpl implements adminDao {
+	QueryRunner runner = new QueryRunner();
+	@Override
+	public int findcount() throws Exception {
+		Long l = (Long)runner.query("select count(*) from product", new ScalarHandler());
+		return l.intValue();
+	}
+	@Override
+	public List findPage(startIndex,pageSize) throws Exception {
+		runner.query("select * from product limit ?,?", rsh)
+		return null;
+	}
+
+}

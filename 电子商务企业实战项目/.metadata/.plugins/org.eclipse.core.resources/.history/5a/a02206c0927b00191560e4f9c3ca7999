@@ -1,0 +1,24 @@
+package cn.itcast.store.service.serviceimpl;
+
+import cn.itcast.store.dao.OrderDao;
+import cn.itcast.store.dao.daoimpl.OrderDaoImpl;
+import cn.itcast.store.domain.ordersBean;
+import cn.itcast.store.service.OrderService;
+import cn.itcast.store.utils.JDBCUtils;
+
+public class OrderServiceImpl implements OrderService{
+
+	@Override
+	public void saveOrder(ordersBean ordersBean) throws Exception {
+		try {
+			JDBCUtils.getConnection().setAutoCommit(false);
+			OrderDao dao = new OrderDaoImpl(ordersBean);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		
+	}
+
+}

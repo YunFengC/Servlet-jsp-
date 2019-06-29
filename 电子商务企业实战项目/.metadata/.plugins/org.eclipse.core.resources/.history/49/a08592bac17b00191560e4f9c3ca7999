@@ -1,0 +1,24 @@
+package cn.itcast.store.dao;
+
+import java.sql.Connection;
+import java.util.List;
+
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.domain.orderitemBean;
+import cn.itcast.store.domain.ordersBean;
+
+public interface OrderDao {
+
+	void saveOrder(Connection conn, ordersBean ordersBean) throws Exception;
+
+	void saveOrderitem(Connection conn, orderitemBean ob)throws Exception;
+
+	int findTotalRecordsByUid(UserBean userbean)throws Exception;
+
+	List<ordersBean> findOrdersByUidWithPage(UserBean userbean, int startIndex, int pageSize)throws Exception;
+
+	ordersBean findoid(String oid)throws Exception;
+	
+	ordersBean findorderitemoid(String oid)throws Exception;
+
+}

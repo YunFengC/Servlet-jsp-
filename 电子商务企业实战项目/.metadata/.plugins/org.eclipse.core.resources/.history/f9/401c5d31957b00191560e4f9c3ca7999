@@ -1,0 +1,18 @@
+package cn.itcast.store.domain;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class ordersBean {
+	private String oid;
+	private Date ordertime;
+	private double total;
+	private String address;
+	private String name;
+	private String telephone;
+	private UserBean userbean;
+	private List<orderitemBean> list = new ArrayList<orderitemBean>();
+	private int state=1;
+	
+}

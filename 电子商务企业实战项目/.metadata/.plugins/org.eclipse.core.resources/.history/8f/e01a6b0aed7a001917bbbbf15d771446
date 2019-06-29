@@ -1,0 +1,130 @@
+package cn.itcast.store.web.servlet;
+import java.io.IOException;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.catalina.connector.Request;
+import org.apache.commons.collections.bag.SynchronizedSortedBag;
+
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.service.UserService;
+import cn.itcast.store.service.serviceimpl.UserServiceImpl;
+import cn.itcast.store.utils.CookUtils;
+import cn.itcast.store.utils.MailUtils;
+import cn.itcast.store.utils.MyBeanUtils;
+import cn.itcast.store.utils.UUIDUtils;
+import cn.itcast.store.web.base.BaseServlet;
+
+/**
+ * Servlet implementation class UserServlet
+ */
+public class UserServlet extends BaseServlet {
+	public String userRegist(HttpServletRequest request, HttpServletResponse response) throws Exception{
+
+		//接收数据
+		UserBean userBean = MyBeanUtils.populate(UserBean.class, request.getParameterMap());
+		userBean.setUid(UUIDUtils.getId());
+		userBean.setState(0);
+		String id = UUIDUtils.getId();
+		userBean.setCode(id);
+		System.out.println(userBean);
+		
+		//实现底层
+		UserService service = new UserServiceImpl();
+		service.AddUser(userBean);
+		//跳转
+		request.setAttribute("msg", "用户注册成功,请激活！！！");
+	
+		MailUtils.sendMail(userBean.getEmail(),id);
+		
+		return "jsp/info.jsp";
+	};
+	public String active(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		//获取激活码
+		String code = request.getParameter("code");
+		System.out.println(code);
+		//查询数据库
+		UserService service = new UserServiceImpl();
+		UserBean userBean = service.userActive(code);
+		
+		if(userBean!=null){
+			userBean.setState(1);
+			//userBean.setCode("");
+			service.UpdataUser(userBean);
+			request.setAttribute("msg", "激活成功,请登陆！！！");
+		}else{
+			request.setAttribute("msg", "激活失败,请重新注册！！！");
+		}
+
+		return "/jsp/login.jsp";	
+	}
+	public String Login(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		//获取表单数据
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		//查询数据库
+		UserService service = new UserServiceImpl();
+		UserBean userbean = service.UserLogin(username,password);
+		
+		if(userbean!=null){
+			request.getSession().setAttribute("userbean", userbean);
+			String auto = request.getParameter("auto");
+			System.out.println(auto);
+			Cookie cookie = new Cookie("auto",username+"="+password);
+			if(auto!=null){
+				cookie.setMaxAge(60*60*24*7);
+				response.addCookie(cookie);
+			}else{
+				cookie.setMaxAge(0);
+				response.addCookie(cookie);
+			}
+			String remember = request.getParameter("remember");
+			System.out.println("remember="+remember);
+			Cookie cookie2 = new Cookie("cookie2",userbean.getUsername());
+			if(auto!=null){
+				cookie2.setMaxAge(60*60*24*7);
+				response.addCookie(cookie2);
+			}else{
+				cookie2.setMaxAge(0);
+				response.addCookie(cookie2);
+			}
+			
+			response.sendRedirect("/MallDemo/IndexServlet");
+				return null;
+		}else{
+			request.setAttribute("msg", "账号或密码错误,请重新登陆！！！");
+			return "/jsp/login.jsp";
+		}
+	}
+	public String LogOut(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		request.getSession().invalidate();
+		Cookie ck = CookUtils.getCookieByName("auto", request.getCookies());
+		if(ck!=null){
+			ck.setMaxAge(0);
+			response.addCookie(ck);
+		}
+		response.sendRedirect("/MallDemo/IndexServlet");
+		
+		return null;
+	}
+	
+	public String TestUser(HttpServletRequest request, HttpServletResponse response)throws Exception{
+		String username = request.getParameter("username");
+		System.out.println(username);
+		UserService service = new UserServiceImpl();
+		boolean flag = service.AllUserName(username);
+		if(flag){
+			response.getWriter().print("1");
+		}else{
+			response.getWriter().print("2");
+		}
+		
+		return null;
+	}
+
+}
+

@@ -1,0 +1,15 @@
+package cn.itcast.store.dao;
+
+import java.util.List;
+
+import cn.itcast.store.domain.CategoryBean;
+
+public interface CategoryDao {
+
+	List<CategoryBean> findAllCats ()throws Exception;
+
+	void AddCategory(String value)throws Exception;
+
+	void updateCategory(String value)throws Exception;
+
+}

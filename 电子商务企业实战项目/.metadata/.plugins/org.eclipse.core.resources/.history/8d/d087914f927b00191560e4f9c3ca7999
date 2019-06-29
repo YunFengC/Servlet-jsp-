@@ -1,0 +1,57 @@
+package cn.itcast.store.web.servlet;
+
+import java.util.Collection;
+import java.util.Date;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import cn.itcast.store.domain.Car;
+import cn.itcast.store.domain.CarTerm;
+import cn.itcast.store.domain.ProductBean;
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.domain.orderitemBean;
+import cn.itcast.store.domain.ordersBean;
+import cn.itcast.store.service.OrderService;
+import cn.itcast.store.service.serviceimpl.OrderServiceImpl;
+import cn.itcast.store.utils.UUIDUtils;
+
+/**
+ * Servlet implementation class OrderServlet
+ */
+public class OrderServlet extends HttpServlet {
+	public String saveOrder(HttpServletRequest request,HttpServletResponse response) throws Exception{
+		Car cart = (Car) request.getSession().getAttribute("cart");
+		Collection<CarTerm> collection = cart.getCollection();
+		for (CarTerm carTerm : collection) {
+			String itemid = UUIDUtils.getId();
+			int quantity = carTerm.getNumber();
+			double total = carTerm.getSubtotal();
+			ProductBean productbean = carTerm.getProductbean();
+			ordersBean orderbean = new ordersBean();
+			orderitemBean orderitemBean = new orderitemBean();
+			orderitemBean.setItemid(itemid);
+			orderitemBean.setOrdersbean(orderbean);
+			orderitemBean.setProductbean(productbean);
+			orderitemBean.setQuantity(quantity);
+			orderitemBean.setTotal(total);
+		}
+		
+		request.getSession().getAttribute("userbean");
+		String uid = UUIDUtils.getId();
+		Date ordertime = new Date();
+		double total = cart.getTotal();
+		int state = 1;
+		String address = null;
+		String name = null;
+		String telephone = null;
+		UserBean userbean = (UserBean) request.getSession().getAttribute("userbean");
+		ordersBean ordersBean = new ordersBean(uid,ordertime,total,state,address,name,telephone,userbean);
+		
+		OrderService orderService = new OrderServiceImpl();
+		orderService.saveOrder(ordersBean);
+		
+		return "/jsp/order_info.jsp";
+	}
+}

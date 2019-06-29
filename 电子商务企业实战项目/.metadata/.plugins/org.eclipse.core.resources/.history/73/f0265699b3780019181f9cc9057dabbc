@@ -1,0 +1,22 @@
+package ServiceImpl;
+
+import java.util.List;
+
+import Service.ProductService;
+import Utilt.PageModel;
+import dao.Dao;
+import daoImpl.DaoImpl;
+
+public class ProductServiceImpl implements ProductService {
+
+	@Override
+	public PageModel autoAll(int numPage) throws Exception {
+		//实现底层数据库查出总数据数和分页列表
+		Dao dao = new DaoImpl();
+		int total = dao.totalautoAll();
+		List list = dao.listAll();
+		
+		return null;
+	}
+	
+}

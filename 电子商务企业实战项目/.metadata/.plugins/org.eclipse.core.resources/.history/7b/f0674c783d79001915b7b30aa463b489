@@ -1,0 +1,7 @@
+package cn.itcast.store.domain;
+
+public class CarTerm {
+	private ProductBean productbean;
+	private int Number;
+	private int Subtotal;
+}

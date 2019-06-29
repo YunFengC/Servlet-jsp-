@@ -1,0 +1,53 @@
+package cn.itcast.store.dao.daoimpl;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
+
+import cn.itcast.store.dao.OrderDao;
+import cn.itcast.store.domain.UserBean;
+import cn.itcast.store.domain.orderitemBean;
+import cn.itcast.store.domain.ordersBean;
+import cn.itcast.store.utils.JDBCUtils;
+
+public class OrderDaoImpl implements OrderDao {
+	QueryRunner runner = new QueryRunner(JDBCUtils.getDataSource());
+	@Override
+	public void saveOrder(Connection conn, ordersBean ordersBean) throws Exception {
+		String sql = "insert into orders values(?,?,?,?,?,?,?,?)";
+		Object[] params={ordersBean.getOid(),ordersBean.getOrdertime(),ordersBean.getTotal(),ordersBean.getState(),ordersBean.getAddress(),ordersBean.getName(),ordersBean.getTelephone(),ordersBean.getUserbean().getUid()};
+		runner.update(conn,sql,params);
+	}
+
+	@Override
+	public void saveOrderitem(Connection conn, orderitemBean ob) throws Exception {
+		String sql = "insert into orderitem values(?,?,?,?,?)";
+		Object[] params={ob.getItemid(),ob.getQuantity(),ob.getTotal(),ob.getProductbean().getPid(),ob.getOrdersbean().getOid()};
+		runner.update(conn,sql,params);
+	}
+
+	@Override
+	public int findTotalRecordsByUid(UserBean userbean) throws Exception {
+		String sql = "select count(*) from orders where uid=?";
+		Long l = (Long) runner.query(sql,new ScalarHandler(),userbean.getUid());
+		return l.intValue();
+	}
+
+	@Override
+	public List<ordersBean> findOrdersByUidWithPage(UserBean userbean, int startIndex, int pageSize) throws Exception {
+		String sql = "select * from orders where uid=? limit ?,?";
+		List<ordersBean> list = runner.query(sql, new BeanListHandler<ordersBean>(ordersBean.class),userbean.getUid(),startIndex,pageSize);
+		for (ordersBean ob : list) {
+			sql = "select * from orderitem o,product p where o.oid=p.pid and oid=?";
+			List<Map<String, Object>> query = runner.query(sql, new MapListHandler(),ob.getOid());
+		}
+		return null;
+	}
+
+}

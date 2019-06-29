@@ -1,0 +1,46 @@
+package cn.itcast.store.dao.daoimpl;
+
+import java.util.List;
+
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
+
+import cn.itcast.store.dao.CategoryDao;
+import cn.itcast.store.domain.CategoryBean;
+import cn.itcast.store.domain.ProductBean;
+import cn.itcast.store.utils.JDBCUtils;
+import cn.itcast.store.utils.UUIDUtils;
+
+public class CategoryDaoImpl implements CategoryDao {
+	QueryRunner runner = new QueryRunner(JDBCUtils.getDataSource());
+	@Override
+	public List<CategoryBean> findAllCats() throws Exception {
+		return runner.query("select * from category", new BeanListHandler<CategoryBean>(CategoryBean.class));
+	}
+
+	@Override
+	public void AddCategory(String value) throws Exception {
+		String sql = "insert into category values('"+UUIDUtils.getId()+"','"+value+"')";
+		runner.update(sql);
+	}
+
+	@Override
+	public void updateCategory(String value,String cid) throws Exception {
+		runner.update("update category set cname=? where cid=?",value,cid);
+		
+	}
+
+	@Override
+	public ProductBean findP(String cid) throws Exception {
+		return	runner.query("select * from product where cid=?", new BeanHandler<ProductBean>(ProductBean.class),cid);
+	}
+
+	@Override
+	public void delectCategory(String cid) throws Exception {
+		char[] Parameters = cid.toCharArray();
+		runner.update("delect from category where cid=?",Parameters);
+		
+	}
+	
+}

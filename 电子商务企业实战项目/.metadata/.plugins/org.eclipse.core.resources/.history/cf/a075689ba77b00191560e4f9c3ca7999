@@ -1,0 +1,9 @@
+package cn.itcast.store.service;
+
+import cn.itcast.store.domain.ordersBean;
+
+public interface OrderService {
+
+	void saveOrder(ordersBean ordersBean)throws Exception;
+
+}

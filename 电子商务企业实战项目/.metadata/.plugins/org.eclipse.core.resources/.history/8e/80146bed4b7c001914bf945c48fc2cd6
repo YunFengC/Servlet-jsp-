@@ -1,0 +1,7 @@
+package cn.itcast.store.dao;
+
+public interface adminDao {
+
+	int findcount()throws Exception;
+
+}

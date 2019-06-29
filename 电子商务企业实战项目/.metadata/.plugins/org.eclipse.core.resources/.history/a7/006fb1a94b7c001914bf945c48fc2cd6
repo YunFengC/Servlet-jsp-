@@ -1,0 +1,7 @@
+package cn.itcast.store.dao.daoimpl;
+
+import cn.itcast.store.dao.adminDao;
+
+public class adminDaoImpl implements adminDao {
+
+}
